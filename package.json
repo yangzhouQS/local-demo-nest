@@ -27,7 +27,7 @@
     "dayjs": "^1.11.9",
     "lodash": "^4.17.21",
     "mkdirp": "^1.0.4",
-    "mysql2": "^3.6.0",
+    "mysql2": "^3.9.8",
     "nest-winston": "^1.10.0",
     "reflect-metadata": "^0.1.13",
     "reserved-words": "^0.1.2",

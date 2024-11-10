@@ -9,7 +9,7 @@ import { Logger } from "./logger";
 import { isFunction } from "lodash";
 import * as path from "path";
 import { MESSAGES } from "@nestjs/core/constants";
-import { PATH_METADATA } from "@nestjs/common/constants";
+import { METHOD_METADATA, PATH_METADATA } from "@nestjs/common/constants";
 
 export class NestApplication {
   protected isInitialized = false;
@@ -24,7 +24,7 @@ export class NestApplication {
       return this;
     }
 
-    Logger.log("AppModule dependencies initialized", "InstanceLoader");
+    Logger.log(`${this.module.name} - AppModule dependencies initialized`, "InstanceLoader");
     console.log("this.module", this.module);
     // 取出所有模块里边的控制器，路由初始化
     const controllers = Reflect.getMetadata("controllers", this.module);
@@ -47,18 +47,23 @@ export class NestApplication {
         // 原型上的方法
         const method = controllerPrototype[methodName];
 
-        // 方法绑定的请求方法
-        const httpMethod = Reflect.getMetadata("method", method);
+        // 方法元数据的请求方法
+        const httpMethod = Reflect.getMetadata(METHOD_METADATA, method);
 
         // 函数上绑定的路径元数据
-        const pathMetadata = Reflect.getMetadata("path", method);
+        const pathMetadata = Reflect.getMetadata(PATH_METADATA, method);
+
+        console.log(`httpMethod = ${httpMethod}; pathMetadata = ${pathMetadata}`);
 
         // 请求处理方法名不存在
         if (!httpMethod) {
           continue;
         }
 
+        // 完整路径
         const routerPath = path.posix.join("/", prefix, pathMetadata);
+
+        // 配置路由,请求路径对应的处理方法,响应内容
         this.app[httpMethod.toLowerCase()](routerPath, (req: ExpressRequest, res: ExpressResponse, next: ExpressNextFunction) => {
           const result = method.call(controller);
           res.send(result);

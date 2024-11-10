@@ -9,7 +9,7 @@ import { Logger } from "./logger";
 import { isFunction } from "lodash";
 import * as path from "path";
 import { MESSAGES } from "@nestjs/core/constants";
-import { METHOD_METADATA, PATH_METADATA } from "@nestjs/common/constants";
+import { METHOD_METADATA, PATH_METADATA, ROUTE_ARGS_METADATA } from "@nestjs/common/constants";
 
 export class NestApplication {
   protected isInitialized = false;
@@ -25,11 +25,11 @@ export class NestApplication {
     }
 
     Logger.log(`${this.module.name} - AppModule dependencies initialized`, "InstanceLoader");
-    console.log("this.module", this.module);
+    // console.log("this.module", this.module);
     // 取出所有模块里边的控制器，路由初始化
     const controllers = Reflect.getMetadata("controllers", this.module);
 
-    console.log("controllers", controllers);
+    console.log("app controllers", controllers);
     // 解析请求路径和请求处理方法
     for (const Controller of controllers) {
       // 控制器实例化
@@ -53,7 +53,7 @@ export class NestApplication {
         // 函数上绑定的路径元数据
         const pathMetadata = Reflect.getMetadata(PATH_METADATA, method);
 
-        console.log(`httpMethod = ${httpMethod}; pathMetadata = ${pathMetadata}`);
+        // console.log(`httpMethod = ${httpMethod}; pathMetadata = ${pathMetadata}`);
 
         // 请求处理方法名不存在
         if (!httpMethod) {
@@ -65,7 +65,9 @@ export class NestApplication {
 
         // 配置路由,请求路径对应的处理方法,响应内容
         this.app[httpMethod.toLowerCase()](routerPath, (req: ExpressRequest, res: ExpressResponse, next: ExpressNextFunction) => {
-          const result = method.call(controller);
+          console.log("配置路由:");
+          const args = this.resolveParams(controller, methodName, req, res, next);
+          const result = method.call(controller, ...args);
           res.send(result);
         });
 
@@ -84,6 +86,23 @@ export class NestApplication {
     this.isInitialized = true;
     Logger.log(MESSAGES.APPLICATION_READY, "NestApplication");
     return this;
+  }
+
+  /**
+   * 解析路由方法参数
+   * @param instance 路由付费
+   * @param methodName 路由请求方法
+   * @param req 请求对象
+   * @param res 响应对象
+   * @param next
+   * @private
+   */
+  private resolveParams(instance: any, methodName: string, req: ExpressRequest, res: ExpressResponse, next: ExpressNextFunction) {
+
+    console.log("instance", instance.constructor);
+    const paramsMetadata = Reflect.getMetadata(ROUTE_ARGS_METADATA, instance.constructor, methodName);
+    console.log("paramsMetadata", paramsMetadata);
+    return paramsMetadata;
   }
 
   public async registerModules() {

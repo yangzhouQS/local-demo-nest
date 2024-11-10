@@ -19,7 +19,7 @@ export function assignMetadata<TParamtype = any, TArgs = any>(
 ) {
   return {
     ...args,
-    [`${paramtype}:${index}`]: {
+    [`${paramtype}:${index}`]: { // 'request:0':{index,data,pipes}
       index,
       data,
       pipes
@@ -27,6 +27,14 @@ export function assignMetadata<TParamtype = any, TArgs = any>(
   };
 }
 
+/**
+ * 创建一个路由参数装饰器工厂函数
+ *
+ * 根据传入的参数类型，生成一个参数装饰器，用于装饰控制器方法中的参数，以便在路由处理函数中使用。
+ *
+ * @param paramType 路由参数类型，用于标识装饰的参数类型
+ * @returns 返回一个参数装饰器函数，该函数接受一个可选的ParamData对象作为参数
+ */
 function createRouteParamDecorator(paramType: RouteParamtypes) {
   return (data?: ParamData): ParameterDecorator => {
     /**
@@ -35,19 +43,26 @@ function createRouteParamDecorator(paramType: RouteParamtypes) {
      * index：控制器参数索引
      */
     return (target, key, index) => {
-      console.log(target, key, index);
+      // console.log("createRouteParamDecorator", target.constructor, key, index);
       const args = Reflect.getMetadata(ROUTE_ARGS_METADATA, target.constructor, key) || {};
 
-      console.log("args", args);
-      Reflect.defineMetadata(ROUTE_ARGS_METADATA, assignMetadata<RouteParamtypes, Record<number, RouteParamMetadata>>(
-        args,
-        paramType,
-        index,
-        data
-      ), target.constructor, key);
+      // console.log("args->", args, key, index);
+
+      // 将方法的参数信息存储在controller上
+      Reflect.defineMetadata(
+        ROUTE_ARGS_METADATA,
+        assignMetadata<RouteParamtypes, Record<number, RouteParamMetadata>>(
+          args,
+          paramType,
+          index,
+          data
+        ),
+        target.constructor,
+        key
+      );
 
       const args2 = Reflect.getMetadata(ROUTE_ARGS_METADATA, target.constructor, key);
-      console.log("args2", args2);
+      console.log(data, "args2", args2, target.constructor, key, index);
     };
   };
 }

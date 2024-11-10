@@ -10,6 +10,8 @@ import { isFunction } from "lodash";
 import * as path from "path";
 import { MESSAGES } from "@nestjs/core/constants";
 import { METHOD_METADATA, PATH_METADATA, ROUTE_ARGS_METADATA } from "@nestjs/common/constants";
+import { RouterExecutionContext } from "./router/router-execution-context";
+import { RouteParamsFactory } from "./router/route-params-factory";
 
 export class NestApplication {
   protected isInitialized = false;
@@ -99,10 +101,14 @@ export class NestApplication {
    */
   private resolveParams(instance: any, methodName: string, req: ExpressRequest, res: ExpressResponse, next: ExpressNextFunction) {
 
-    console.log("instance", instance.constructor);
     const paramsMetadata = Reflect.getMetadata(ROUTE_ARGS_METADATA, instance.constructor, methodName);
-    console.log("paramsMetadata", paramsMetadata);
-    return paramsMetadata;
+    const routeParamsFactory = new RouteParamsFactory();
+    const routeExecutionCtx = new RouterExecutionContext(routeParamsFactory);
+    return  routeExecutionCtx.exchangeKeysForValues(
+      Object.keys(paramsMetadata),
+      paramsMetadata,
+      {req,res,next}
+    )
   }
 
   public async registerModules() {

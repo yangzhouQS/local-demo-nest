@@ -6,8 +6,8 @@ export class UserController {
 
   @Get("test-req")
   handleRequest(@Req() req: ExpressRequest, @Request() request: ExpressRequest) {
-    console.log("handleRequest->req:", req);
-    console.log("handleRequest->request:", request);
+    console.log("handleRequest->req:", req.path);
+    console.log("handleRequest->request:", request.url);
     return "handleRequest";
   }
 }

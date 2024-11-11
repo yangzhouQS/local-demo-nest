@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
-    "@nestjs/core": "^10.0.0",
+    "@nestjs/core": "^10.4.7",
     "@nestjs/platform-express": "^10.0.0",
     "cli-color": "^2.0.4",
     "dayjs": "^1.11.9",

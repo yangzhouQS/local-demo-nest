@@ -12,6 +12,7 @@ import { MESSAGES } from "@nestjs/core/constants";
 import { METHOD_METADATA, PATH_METADATA, ROUTE_ARGS_METADATA } from "@nestjs/common/constants";
 import { RouterExecutionContext } from "./router/router-execution-context";
 import { RouteParamsFactory } from "./router/route-params-factory";
+import { Headers } from "@nestjs/common";
 
 export class NestApplication {
   protected isInitialized = false;
@@ -111,6 +112,8 @@ export class NestApplication {
           return req;
         case "Query":
           return data ? req.query[data] : req.query;
+        case "Headers":
+          return data ? req.headers[data] : req.headers;
         default:
           return null;
       }

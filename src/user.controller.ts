@@ -1,4 +1,4 @@
-import { Controller, Req, Get, Request, Query } from "./@nestjs/common";
+import { Controller, Req, Get, Request, Query, Headers } from "./@nestjs/common";
 import { Request as ExpressRequest } from "express";
 
 @Controller("users")
@@ -18,5 +18,12 @@ export class UserController {
     console.log("query", query);
     console.log("query->id", id);
     return "handleQuery id:" + query.id;
+  }
+
+  @Get("headers")
+  handleHeaders(@Headers() headers: any, @Headers("accept") accept: string) {
+    console.log("headers", headers);
+    console.log("headers->accept", accept);
+    return "handleHeaders accept:" + accept;
   }
 }

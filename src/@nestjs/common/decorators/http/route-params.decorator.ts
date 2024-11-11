@@ -50,6 +50,7 @@ export const Request: () => ParameterDecorator = createRouteParamDecorator("Requ
 export const Req = Request;
 
 export const Query = createRouteParamDecorator("Query");
+export const Headers = createRouteParamDecorator("Headers");
 
 /*export function Query(): ParameterDecorator;
 export function Query(property?: string): ParameterDecorator {

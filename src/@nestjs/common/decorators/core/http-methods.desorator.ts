@@ -1,5 +1,4 @@
 import "reflect-metadata";
-import { RequestMethod } from "@nestjs/common";
 import { METHOD_METADATA, PATH_METADATA } from "@nestjs/common/constants";
 
 
@@ -13,15 +12,16 @@ function createMappingDecorator(method: string) {
     };
   };
 }
+/*
 
 export function Get(path = ""): MethodDecorator {
   // console.log("path: ", path);
-  /**
+  /!**
    * Get请求装饰器
    * @param target 类的原型 xxxController.prototype
    * @param propertyKey 被装饰的方法名称
    * @param descriptor 方法的属性描述器
-   */
+   *!/
   return (target: any, propertyKey: string, descriptor: TypedPropertyDescriptor<any>) => {
 
     // 给函数添加元数据 path
@@ -39,7 +39,15 @@ export function Get(path = ""): MethodDecorator {
     return descriptor;
   };
 }
+*/
 
 
 export const Post = createMappingDecorator("POST");
+export const Get = createMappingDecorator("Get");
+export const Delete = createMappingDecorator("Delete");
 export const Put = createMappingDecorator("PUT");
+export const Patch = createMappingDecorator("Patch");
+export const Options = createMappingDecorator("Options");
+export const Head = createMappingDecorator("Head");
+export const All = createMappingDecorator("All");
+export const Search = createMappingDecorator("Search");

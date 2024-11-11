@@ -21,6 +21,11 @@ export class NestApplication {
   constructor(protected readonly module: any) {
   }
 
+  use(...args: [any, any?]): this {
+    this.app.use(...args);
+    return this;
+  }
+
   // 配置初始化工作
   async init() {
     if (this.isInitialized) {
@@ -99,11 +104,14 @@ export class NestApplication {
    * @param next
    * @private
    */
-  private resolveParams(instance: any, methodName: string, req: ExpressRequest, res: ExpressResponse, next: ExpressNextFunction) {
+  private resolveParams<
+    TRequest extends Record<string, any> = any,
+    TResponse = any,
+  >(instance: any, methodName: string, req: TRequest, res: TResponse, next: ExpressNextFunction) {
 
     const paramsKey = `params:${methodName}`;
     const paramsMetadata = Reflect.getMetadata(paramsKey, instance.constructor);
-    console.log("paramsMetadata", paramsMetadata);
+    // console.log("paramsMetadata", paramsMetadata);
     return map(paramsMetadata, (parameMetada: any) => {
       const { paramType, data } = parameMetada || {};
       switch (paramType) {
@@ -114,6 +122,10 @@ export class NestApplication {
           return data ? req.query[data] : req.query;
         case "Headers":
           return data ? req.headers[data] : req.headers;
+        case "Session":
+          return data ? req.session[data] : req.session;
+        case "IP":
+          return data ? req.session[data] : req.session;
         default:
           return null;
       }

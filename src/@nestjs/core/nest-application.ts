@@ -107,7 +107,7 @@ export class NestApplication {
   private resolveParams<
     TRequest extends Record<string, any> = any,
     TResponse = any,
-  >(instance: any, methodName: string, req: TRequest, res: TResponse, next: ExpressNextFunction) {
+  >(instance: any, methodName: string, req: TRequest, res: TResponse, next: Function) {
 
     const paramsKey = `params:${methodName}`;
     const paramsMetadata = Reflect.getMetadata(paramsKey, instance.constructor) || [];
@@ -129,8 +129,11 @@ export class NestApplication {
         case "Param":
           return data ? req.params[data] : req.params;
         case "Body":
-          console.log('data:',data)
          return  data && req.body ? req.body[data] : req.body;
+        case "Response":
+         return  res as any
+        case "Next":
+         return  next as any
         default:
           return null;
       }

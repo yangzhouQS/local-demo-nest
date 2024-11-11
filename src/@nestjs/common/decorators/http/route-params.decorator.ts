@@ -55,6 +55,9 @@ export const Session = createRouteParamDecorator("Session");
 export const IP = createRouteParamDecorator("IP");
 export const Param = createRouteParamDecorator("Param");
 export const Body = createRouteParamDecorator("Body");
+export const Response = createRouteParamDecorator("Response");
+export const Res = Response;
+export const Next = createRouteParamDecorator("Next");
 
 /*export function Query(): ParameterDecorator;
 export function Query(property?: string): ParameterDecorator {

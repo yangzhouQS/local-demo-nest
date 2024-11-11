@@ -6,7 +6,7 @@ import {
 } from "express";
 import * as express from "express";
 import { Logger } from "./logger";
-import { isFunction, sortBy } from "lodash";
+import { isFunction, map, sortBy } from "lodash";
 import * as path from "path";
 import { MESSAGES } from "@nestjs/core/constants";
 import { METHOD_METADATA, PATH_METADATA, ROUTE_ARGS_METADATA } from "@nestjs/common/constants";
@@ -102,12 +102,15 @@ export class NestApplication {
 
     const paramsKey = `params:${methodName}`;
     const paramsMetadata = Reflect.getMetadata(paramsKey, instance.constructor);
-    return sortBy(paramsMetadata, "parameterIndex").map((parameMetada: any) => {
-      const { paramType } = parameMetada;
+    console.log("paramsMetadata", paramsMetadata);
+    return map(paramsMetadata, (parameMetada: any) => {
+      const { paramType, data } = parameMetada || {};
       switch (paramType) {
         case "Request":
         case "Req":
           return req;
+        case "Query":
+          return data ? req.query[data] : req.query;
         default:
           return null;
       }

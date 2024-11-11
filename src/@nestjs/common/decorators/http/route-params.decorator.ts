@@ -34,7 +34,7 @@ function createRouteParamDecorator(paramType: string) {
       // 将方法的参数信息存储在controller上
       const paramsKey = `params:${key}`;
       const oldValue = Reflect.getMetadata(paramsKey, target.constructor) || [];
-      const paramsValue = { parameterIndex: index, data: {}, paramType: paramType };
+      const paramsValue = { parameterIndex: index, data, paramType: paramType };
       oldValue[index] = paramsValue;
 
       Reflect.defineMetadata(paramsKey, oldValue, target.constructor);
@@ -48,6 +48,13 @@ function createRouteParamDecorator(paramType: string) {
 export const Request: () => ParameterDecorator = createRouteParamDecorator("Request");
 
 export const Req = Request;
+
+export const Query = createRouteParamDecorator("Query");
+
+/*export function Query(): ParameterDecorator;
+export function Query(property?: string): ParameterDecorator {
+  return createRouteParamDecorator("Query")
+}*/
 
 
 /*

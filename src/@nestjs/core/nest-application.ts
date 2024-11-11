@@ -110,7 +110,7 @@ export class NestApplication {
   >(instance: any, methodName: string, req: TRequest, res: TResponse, next: ExpressNextFunction) {
 
     const paramsKey = `params:${methodName}`;
-    const paramsMetadata = Reflect.getMetadata(paramsKey, instance.constructor);
+    const paramsMetadata = Reflect.getMetadata(paramsKey, instance.constructor) || [];
     // console.log("paramsMetadata", paramsMetadata);
     return map(paramsMetadata, (parameMetada: any) => {
       const { paramType, data } = parameMetada || {};
@@ -128,6 +128,9 @@ export class NestApplication {
           return req.ip;
         case "Param":
           return data ? req.params[data] : req.params;
+        case "Body":
+          console.log('data:',data)
+         return  data && req.body ? req.body[data] : req.body;
         default:
           return null;
       }

@@ -1,9 +1,21 @@
 import { NestFactory } from "./@nestjs/core";
 import { AppModule } from "./app.module";
 import * as session from "express-session";
+import * as bodyParser from 'body-parser';
+import {
+  json as bodyParserJson,
+  urlencoded as bodyParserUrlencoded,
+} from 'body-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  // parse application/x-www-form-urlencoded
+  app.use(bodyParserUrlencoded({ extended: false }))
+
+  // parse application/json
+  app.use(bodyParserJson())
+
   app.use(session({
     secret: "local-secret-key",
     resave: false, // 在每次请求时更新 session 变量

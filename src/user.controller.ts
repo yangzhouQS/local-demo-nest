@@ -8,6 +8,7 @@ export class UserController {
   handleRequest(@Req() req: ExpressRequest, @Request() request: ExpressRequest) {
     console.log("handleRequest->req:", req.path);
     console.log("handleRequest->request:", request.url);
+    console.log("handleRequest->method:", request.method);
     return "handleRequest";
   }
 }

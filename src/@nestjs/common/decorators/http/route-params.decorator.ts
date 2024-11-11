@@ -10,23 +10,6 @@ export interface RouteParamMetadata {
   data?: ParamData;
 }
 
-export function assignMetadata<TParamtype = any, TArgs = any>(
-  args: TArgs,
-  paramtype: TParamtype,
-  index: number,
-  data?: ParamData,
-  ...pipes: (Type<any> | any)[]
-) {
-  return {
-    ...args,
-    [`${paramtype}:${index}`]: { // 'request:0':{index,data,pipes}
-      index,
-      data,
-      pipes
-    }
-  };
-}
-
 /**
  * 创建一个路由参数装饰器工厂函数
  *
@@ -35,39 +18,34 @@ export function assignMetadata<TParamtype = any, TArgs = any>(
  * @param paramType 路由参数类型，用于标识装饰的参数类型
  * @returns 返回一个参数装饰器函数，该函数接受一个可选的ParamData对象作为参数
  */
-function createRouteParamDecorator(paramType: RouteParamtypes) {
+function createRouteParamDecorator(paramType: string) {
   return (data?: ParamData): ParameterDecorator => {
     /**
      * target：控制器原型
-     * key：方法名
+     * key：处理请求的方法名
      * index：控制器参数索引
      */
-    return (target, key, index) => {
-      // console.log("createRouteParamDecorator", target.constructor, key, index);
+    return (target, key: string, index) => {
+      console.log("createRouteParamDecorator", target.constructor, key, index);
       const args = Reflect.getMetadata(ROUTE_ARGS_METADATA, target.constructor, key) || {};
 
       // console.log("args->", args, key, index);
 
       // 将方法的参数信息存储在controller上
-      Reflect.defineMetadata(
-        ROUTE_ARGS_METADATA,
-        assignMetadata<RouteParamtypes, Record<number, RouteParamMetadata>>(
-          args,
-          paramType,
-          index,
-          data
-        ),
-        target.constructor,
-        key
-      );
+      const paramsKey = `params:${key}`;
+      const oldValue = Reflect.getMetadata(paramsKey, target.constructor) || [];
+      const paramsValue = { parameterIndex: index, data: {}, paramType: paramType };
+      oldValue[index] = paramsValue;
 
-      const args2 = Reflect.getMetadata(ROUTE_ARGS_METADATA, target.constructor, key);
-      console.log(data, "args2", args2, target.constructor, key, index);
+      Reflect.defineMetadata(paramsKey, oldValue, target.constructor);
+      const oldValue2 = Reflect.getMetadata(paramsKey, target.constructor);
+
+      // console.log("oldValue2", oldValue2);
     };
   };
 }
 
-export const Request: () => ParameterDecorator = createRouteParamDecorator(RouteParamtypes.REQUEST);
+export const Request: () => ParameterDecorator = createRouteParamDecorator("Request");
 
 export const Req = Request;
 

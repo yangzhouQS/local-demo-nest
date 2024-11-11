@@ -6,7 +6,7 @@ import {
 } from "express";
 import * as express from "express";
 import { Logger } from "./logger";
-import { isFunction } from "lodash";
+import { isFunction, sortBy } from "lodash";
 import * as path from "path";
 import { MESSAGES } from "@nestjs/core/constants";
 import { METHOD_METADATA, PATH_METADATA, ROUTE_ARGS_METADATA } from "@nestjs/common/constants";
@@ -67,7 +67,6 @@ export class NestApplication {
 
         // 配置路由,请求路径对应的处理方法,响应内容
         this.app[httpMethod.toLowerCase()](routerPath, (req: ExpressRequest, res: ExpressResponse, next: ExpressNextFunction) => {
-          console.log("配置路由:");
           const args = this.resolveParams(controller, methodName, req, res, next);
           const result = method.call(controller, ...args);
           res.send(result);
@@ -101,14 +100,18 @@ export class NestApplication {
    */
   private resolveParams(instance: any, methodName: string, req: ExpressRequest, res: ExpressResponse, next: ExpressNextFunction) {
 
-    const paramsMetadata = Reflect.getMetadata(ROUTE_ARGS_METADATA, instance.constructor, methodName);
-    const routeParamsFactory = new RouteParamsFactory();
-    const routeExecutionCtx = new RouterExecutionContext(routeParamsFactory);
-    return  routeExecutionCtx.exchangeKeysForValues(
-      Object.keys(paramsMetadata),
-      paramsMetadata,
-      {req,res,next}
-    )
+    const paramsKey = `params:${methodName}`;
+    const paramsMetadata = Reflect.getMetadata(paramsKey, instance.constructor);
+    return sortBy(paramsMetadata, "parameterIndex").map((parameMetada: any) => {
+      const { paramType } = parameMetada;
+      switch (paramType) {
+        case "Request":
+        case "Req":
+          return req;
+        default:
+          return null;
+      }
+    });
   }
 
   public async registerModules() {

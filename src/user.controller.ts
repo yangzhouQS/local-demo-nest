@@ -1,4 +1,4 @@
-import { Controller, Req, Get, Request, Query, Headers, Session, IP } from "./@nestjs/common";
+import { Controller, Req, Get, Request, Query, Headers, Session, IP, Param } from "./@nestjs/common";
 import { Request as ExpressRequest } from "express";
 
 @Controller("users")
@@ -43,5 +43,11 @@ export class UserController {
   getUserIp(@IP() ip: string) {
     console.log("getUserIp->ip", ip);
     return "getUserIp ip:" + ip;
+  }
+  @Get("get-param/:id/:name")
+  getParams(@Param() param: any,@Param("id") id: string, @Param("name") name: string) {
+    console.log("getParams->id", id);
+    console.log("getParams->name", name);
+    return `getParams name=${name} ; id = ${id}`;
   }
 }

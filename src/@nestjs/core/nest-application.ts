@@ -6,7 +6,7 @@ import {
 } from "express";
 import * as express from "express";
 import { Logger } from "./logger";
-import { isFunction, map, sortBy } from "lodash";
+import { filter, find, isFunction, map, sortBy } from "lodash";
 import * as path from "path";
 import { MESSAGES } from "@nestjs/core/constants";
 import { METHOD_METADATA, PATH_METADATA, ROUTE_ARGS_METADATA } from "@nestjs/common/constants";
@@ -61,7 +61,7 @@ export class NestApplication {
         // 函数上绑定的路径元数据
         const pathMetadata = Reflect.getMetadata(PATH_METADATA, method);
 
-        // console.log(`httpMethod = ${httpMethod}; pathMetadata = ${pathMetadata}`);
+        // console.log(`httpMethod = ${httpMethod}; pathMetadata = ${pathMetadata}`, controller);
 
         // 请求处理方法名不存在
         if (!httpMethod) {
@@ -74,8 +74,15 @@ export class NestApplication {
         // 配置路由,请求路径对应的处理方法,响应内容
         this.app[httpMethod.toLowerCase()](routerPath, (req: ExpressRequest, res: ExpressResponse, next: ExpressNextFunction) => {
           const args = this.resolveParams(controller, methodName, req, res, next);
+
+          // 执行路由处理函数,获取返回值
           const result = method.call(controller, ...args);
-          res.send(result);
+
+          const resMetadata = this.getCustomResMetadata(controller.constructor, methodName);
+          if (!resMetadata || resMetadata?.data?.passthrough === true) {
+            // 把返回值序列化后发送给客户端
+            res.send(result);
+          }
         });
 
         Logger.log(`Mapped {${routerPath}, ${httpMethod}} route`, "RouterExplorer");
@@ -129,15 +136,24 @@ export class NestApplication {
         case "Param":
           return data ? req.params[data] : req.params;
         case "Body":
-         return  data && req.body ? req.body[data] : req.body;
+          return data && req.body ? req.body[data] : req.body;
         case "Response":
-         return  res as any
+        case "Res":
+          return res as any;
         case "Next":
-         return  next as any
+          return next as any;
+        case "HostParam":
+          return req.hosts as any;
         default:
           return null;
       }
     });
+  }
+
+  private getCustomResMetadata(instance: any, methodName: string) {
+    const key = `params:${methodName}`;
+    const paramsMetadata = Reflect.getMetadata(key, instance);
+    return find(paramsMetadata, (param: any) => ["Response", "Res"].includes(param?.paramType));
   }
 
   public async registerModules() {

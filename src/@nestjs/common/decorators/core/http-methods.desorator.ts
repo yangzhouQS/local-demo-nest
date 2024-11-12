@@ -3,8 +3,19 @@ import { METHOD_METADATA, PATH_METADATA } from "@nestjs/common/constants";
 
 
 function createMappingDecorator(method: string) {
-  return function(path: string|string[]): MethodDecorator {
+
+  /**
+   * @param path 路由地址, 可以是数组
+   */
+  return function(path?: string | string[]): MethodDecorator {
     return (target: any, propertyKey: string, descriptor: TypedPropertyDescriptor<any>) => {
+      if (!path) {
+        path = "/";
+      }
+      if (!method) {
+        method = "GET";
+      }
+      // console.log("method -->", method, path);
       Reflect.defineMetadata(PATH_METADATA, path, descriptor.value);
       Reflect.defineMetadata("path", path, descriptor.value);
       Reflect.defineMetadata(METHOD_METADATA, method, descriptor.value);
@@ -12,6 +23,7 @@ function createMappingDecorator(method: string) {
     };
   };
 }
+
 /*
 
 export function Get(path = ""): MethodDecorator {

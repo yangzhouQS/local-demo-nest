@@ -26,13 +26,15 @@ function createRouteParamDecorator(paramType: string) {
      * index：控制器参数索引
      */
     return (target, key: string, index) => {
-      console.log("createRouteParamDecorator", target.constructor, key, index);
-      const args = Reflect.getMetadata(ROUTE_ARGS_METADATA, target.constructor, key) || {};
+      // console.log("createRouteParamDecorator", target.constructor, key, index);
+      // const args = Reflect.getMetadata(ROUTE_ARGS_METADATA, target.constructor, key) || {};
 
       // console.log("args->", args, key, index);
 
       // 将方法的参数信息存储在controller上
       const paramsKey = `params:${key}`;
+      // console.log(`paramType=${paramType}; paramsKey = ${paramsKey}; reqMethod = {${key}}`);
+
       const oldValue = Reflect.getMetadata(paramsKey, target.constructor) || [];
       const paramsValue = { parameterIndex: index, data, paramType: paramType };
       oldValue[index] = paramsValue;
@@ -58,6 +60,7 @@ export const Body = createRouteParamDecorator("Body");
 export const Response = createRouteParamDecorator("Response");
 export const Res = Response;
 export const Next = createRouteParamDecorator("Next");
+export const HostParam = createRouteParamDecorator("HostParam");
 
 /*export function Query(): ParameterDecorator;
 export function Query(property?: string): ParameterDecorator {

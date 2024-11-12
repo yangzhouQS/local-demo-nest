@@ -153,7 +153,7 @@ export class NestApplication {
   private getCustomResMetadata(instance: any, methodName: string) {
     const key = `params:${methodName}`;
     const paramsMetadata = Reflect.getMetadata(key, instance);
-    return find(paramsMetadata, (param: any) => ["Response", "Res"].includes(param?.paramType));
+    return find(paramsMetadata, (param: any) => ["Response", "Res", "Next"].includes(param?.paramType));
   }
 
   public async registerModules() {

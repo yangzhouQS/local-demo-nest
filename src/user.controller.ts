@@ -1,4 +1,18 @@
-import { Controller, Req, Get, Request, Query, Headers, Session, IP, Param, Body, Post, Res } from "./@nestjs/common";
+import {
+  Controller,
+  Req,
+  Get,
+  Request,
+  Query,
+  Headers,
+  Session,
+  IP,
+  Param,
+  Body,
+  Post,
+  Res,
+  Next
+} from "./@nestjs/common";
 import { Request as ExpressRequest } from "express";
 
 @Controller("users")
@@ -76,5 +90,13 @@ export class UserController {
     // 只想自定义header，不想自定义body
     res.setHeader("custom-header", "customPassthrough");
     return `customPassthrough `;
+  }
+
+  @Post("custom-next-handler")
+  next(@Next() next: any) {
+    console.log("next->body");
+
+    next();
+    return `@Next()`;
   }
 }

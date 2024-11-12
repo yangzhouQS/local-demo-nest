@@ -1,4 +1,11 @@
 
+
+
+### Next
+警告
+Nest 会检测处理程序何时使用 @Res() 或 @Next()，这表明你已选择特定于库的选项。如果同时使用两种方法，则该单一路由的标准方法将自动禁用，并且将不再按预期工作。
+要同时使用这两种方法（例如，通过注入响应对象来仅设置 cookies/headers，但仍将其余部分留给框架），你必须在 @Res({ passthrough: true }) 装饰器中将 passthrough 选项设置为 true。
+
 ``
 D:\tools\TEMP\npm\npm\pnpm.cmd run start:debug
 

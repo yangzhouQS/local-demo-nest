@@ -11,7 +11,7 @@ import {
   Body,
   Post,
   Res,
-  Next, Redirect
+  Next, Redirect, Header
 } from "./@nestjs/common";
 import { Request as ExpressRequest } from "express";
 import { HttpCode } from "@nestjs/common/decorators/http/http-code.decorator";
@@ -117,5 +117,19 @@ export class UserController {
     console.log("redirectUser->body");
 
     return { url: `http://www.baidu.com?version=${version}`, status: 301 };
+  }
+
+  // 动态重定向
+  @Get("custom-header")
+  @Header("custom-header", "customHeader")
+  @Header("custom-header2", "customHeader2")
+  @Header("custom-header3", "customHeader3")
+  customHeader() {
+    console.log("customHeader->body");
+    return {
+      headers: {
+        "custom-header": "customHeader",
+      },
+    };
   }
 }

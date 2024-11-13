@@ -6,10 +6,11 @@ import {
 } from "express";
 import * as express from "express";
 import { Logger } from "./logger";
-import { filter, find, isFunction, map, sortBy } from "lodash";
+import { filter, find, forEach, isFunction, map, sortBy } from "lodash";
 import * as path from "path";
 import { MESSAGES } from "@nestjs/core/constants";
 import {
+  HEADERS_METADATA,
   HTTP_CODE_METADATA,
   METHOD_METADATA,
   PATH_METADATA,
@@ -70,6 +71,9 @@ export class NestApplication {
         // 请求状态码
         const httpCode = Reflect.getMetadata(HTTP_CODE_METADATA, method);
 
+        // 响应头
+        const headerArray = Reflect.getMetadata(HEADERS_METADATA, method);
+
         // console.log(`httpMethod = ${httpMethod}; pathMetadata = ${pathMetadata}`, controller);
 
         // (元数据在方法上)重定向元数据获取
@@ -115,6 +119,7 @@ export class NestApplication {
 
           const resMetadata = this.getCustomResMetadata(controller.constructor, methodName);
           if (!resMetadata || resMetadata?.data?.passthrough === true) {
+            forEach(headerArray,({name, value}) => res.setHeader(name, value));
             // 把返回值序列化后发送给客户端
             res.send(result);
           }

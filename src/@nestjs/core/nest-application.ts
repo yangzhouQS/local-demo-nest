@@ -26,6 +26,10 @@ export class NestApplication {
   private readonly app: Express = express();
 
   constructor(protected readonly module: any) {
+    this.app.use((req, res, next) => {
+      Object.assign(req,{ userId: 1000086, name: "admin" })
+      next();
+    });
   }
 
   use(...args: [any, any?]): this {
@@ -119,7 +123,7 @@ export class NestApplication {
 
           const resMetadata = this.getCustomResMetadata(controller.constructor, methodName);
           if (!resMetadata || resMetadata?.data?.passthrough === true) {
-            forEach(headerArray,({name, value}) => res.setHeader(name, value));
+            forEach(headerArray, ({ name, value }) => res.setHeader(name, value));
             // 把返回值序列化后发送给客户端
             res.send(result);
           }

@@ -132,4 +132,13 @@ export class UserController {
       },
     };
   }
+
+
+
+  // 动态重定向
+  @Get("custom-param-decorator")
+  customParamDecorator() {
+    console.log("customHeader->body");
+    return "customParamDecorator";
+  }
 }

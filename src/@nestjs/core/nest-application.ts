@@ -9,7 +9,13 @@ import { Logger } from "./logger";
 import { filter, find, isFunction, map, sortBy } from "lodash";
 import * as path from "path";
 import { MESSAGES } from "@nestjs/core/constants";
-import { METHOD_METADATA, PATH_METADATA, REDIRECT_METADATA, ROUTE_ARGS_METADATA } from "@nestjs/common/constants";
+import {
+  HTTP_CODE_METADATA,
+  METHOD_METADATA,
+  PATH_METADATA,
+  REDIRECT_METADATA,
+  ROUTE_ARGS_METADATA
+} from "@nestjs/common/constants";
 import { RouterExecutionContext } from "./router/router-execution-context";
 import { RouteParamsFactory } from "./router/route-params-factory";
 import { Headers } from "@nestjs/common";
@@ -61,10 +67,16 @@ export class NestApplication {
         // 函数上绑定的路径元数据
         const pathMetadata = Reflect.getMetadata(PATH_METADATA, method);
 
+        // 请求状态码
+        const httpCode = Reflect.getMetadata(HTTP_CODE_METADATA, method);
+
         // console.log(`httpMethod = ${httpMethod}; pathMetadata = ${pathMetadata}`, controller);
 
         // (元数据在方法上)重定向元数据获取
-        const { url:redirectUrl, statusCode:redirectStatusCode } =  Reflect.getMetadata(REDIRECT_METADATA, method)||{};
+        const {
+          url: redirectUrl,
+          statusCode: redirectStatusCode
+        } = Reflect.getMetadata(REDIRECT_METADATA, method) || {};
 
         // 请求处理方法名不存在
         if (!httpMethod) {
@@ -82,13 +94,23 @@ export class NestApplication {
           const result = method.call(controller, ...args);
 
           // 返回结果动态重定向
-          if (result.url){
+          if (result.url) {
             return res.redirect(result.statusCode || 302, result.url);
           }
 
           // 判断是否需要重定向
-          if (redirectUrl){
+          if (redirectUrl) {
             return res.redirect(redirectStatusCode || 302, redirectUrl);
+          }
+
+          if (httpMethod === "HEAD") {
+            res.statusCode = 204;
+          }
+
+          if (httpCode) {
+            res.statusCode = httpCode;
+          } else if (`${httpMethod}`.toUpperCase() === "POST") {
+            res.statusCode = 201;
           }
 
           const resMetadata = this.getCustomResMetadata(controller.constructor, methodName);

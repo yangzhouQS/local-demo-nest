@@ -14,6 +14,7 @@ import {
   Next, Redirect
 } from "./@nestjs/common";
 import { Request as ExpressRequest } from "express";
+import { HttpCode } from "@nestjs/common/decorators/http/http-code.decorator";
 
 @Controller("users")
 export class UserController {
@@ -83,6 +84,7 @@ export class UserController {
     return `customResponse `;
   }
 
+  @HttpCode(200)
   @Post("custom-passthrough")
   customPassthrough(@Res({ passthrough: true }) res: any, age: number) {
     console.log("customPassthrough->body");

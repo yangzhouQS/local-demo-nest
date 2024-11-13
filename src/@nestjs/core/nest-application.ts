@@ -9,7 +9,7 @@ import { Logger } from "./logger";
 import { filter, find, isFunction, map, sortBy } from "lodash";
 import * as path from "path";
 import { MESSAGES } from "@nestjs/core/constants";
-import { METHOD_METADATA, PATH_METADATA, ROUTE_ARGS_METADATA } from "@nestjs/common/constants";
+import { METHOD_METADATA, PATH_METADATA, REDIRECT_METADATA, ROUTE_ARGS_METADATA } from "@nestjs/common/constants";
 import { RouterExecutionContext } from "./router/router-execution-context";
 import { RouteParamsFactory } from "./router/route-params-factory";
 import { Headers } from "@nestjs/common";
@@ -63,6 +63,9 @@ export class NestApplication {
 
         // console.log(`httpMethod = ${httpMethod}; pathMetadata = ${pathMetadata}`, controller);
 
+        // (元数据在方法上)重定向元数据获取
+        const { url:redirectUrl, statusCode:redirectStatusCode } =  Reflect.getMetadata(REDIRECT_METADATA, method)||{};
+
         // 请求处理方法名不存在
         if (!httpMethod) {
           continue;
@@ -77,6 +80,16 @@ export class NestApplication {
 
           // 执行路由处理函数,获取返回值
           const result = method.call(controller, ...args);
+
+          // 返回结果动态重定向
+          if (result.url){
+            return res.redirect(result.statusCode || 302, result.url);
+          }
+
+          // 判断是否需要重定向
+          if (redirectUrl){
+            return res.redirect(redirectStatusCode || 302, redirectUrl);
+          }
 
           const resMetadata = this.getCustomResMetadata(controller.constructor, methodName);
           if (!resMetadata || resMetadata?.data?.passthrough === true) {

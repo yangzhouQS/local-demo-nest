@@ -11,7 +11,7 @@ import {
   Body,
   Post,
   Res,
-  Next
+  Next, Redirect
 } from "./@nestjs/common";
 import { Request as ExpressRequest } from "express";
 
@@ -98,5 +98,22 @@ export class UserController {
 
     next();
     return `@Next()`;
+  }
+
+  // 请求重定向
+  @Post("custom-redirect-user")
+  @Redirect("http://www.baidu.com", 301)
+  redirectUser() {
+    console.log("redirectUser->body");
+
+    return "redirectUser->body";
+  }
+
+  // 动态重定向
+  @Get("custom-redirect-user2")
+  redirectDynamic(@Query("version") version: string) {
+    console.log("redirectUser->body");
+
+    return { url: `http://www.baidu.com?version=${version}`, status: 301 };
   }
 }

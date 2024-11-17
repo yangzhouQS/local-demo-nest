@@ -1,6 +1,6 @@
 import { isFunction, isNil, uniqueId } from "lodash";
-import { ROUTE_ARGS_METADATA } from "@nestjs/common/constants";
-import { CustomParamFactory } from "@nestjs/common/interface/custom-route-param-factory.interface";
+import { ROUTE_ARGS_METADATA } from "../../../common/constants";
+import { CustomParamFactory } from "../../../common/interface/custom-route-param-factory.interface";
 
 export type ParamDecoratorEnhancer = ParameterDecorator;
 

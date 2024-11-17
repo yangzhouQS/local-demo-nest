@@ -1,4 +1,4 @@
-import { HTTP_CODE_METADATA } from "@nestjs/common/constants";
+import { HTTP_CODE_METADATA } from "../../../common/constants";
 
 /**
  * HttpCode 装饰器

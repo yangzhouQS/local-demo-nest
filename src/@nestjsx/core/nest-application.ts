@@ -8,7 +8,7 @@ import * as express from "express";
 import { Logger } from "./logger";
 import { filter, find, forEach, isFunction, map, sortBy } from "lodash";
 import * as path from "path";
-import { MESSAGES } from "@nestjs/core/constants";
+import { MESSAGES } from "../core/constants";
 import {
   HEADERS_METADATA,
   HTTP_CODE_METADATA,
@@ -16,10 +16,7 @@ import {
   PATH_METADATA,
   REDIRECT_METADATA,
   ROUTE_ARGS_METADATA
-} from "@nestjs/common/constants";
-import { RouterExecutionContext } from "./router/router-execution-context";
-import { RouteParamsFactory } from "./router/route-params-factory";
-import { Headers } from "@nestjs/common";
+} from "../common/constants";
 
 export class NestApplication {
   protected isInitialized = false;
@@ -27,7 +24,7 @@ export class NestApplication {
 
   constructor(protected readonly module: any) {
     this.app.use((req, res, next) => {
-      Object.assign(req,{ userId: 1000086, name: "admin" })
+      Object.assign(req, { userId: 1000086, name: "admin" });
       next();
     });
   }
@@ -51,6 +48,9 @@ export class NestApplication {
     console.log("app controllers", controllers);
     // 解析请求路径和请求处理方法
     for (const Controller of controllers) {
+      // 解析控制器依赖
+      const dependencies = this.resolveDependencies(Controller);
+      console.log(dependencies);
       // 控制器实例化
       const controller = new Controller();
 
@@ -144,6 +144,20 @@ export class NestApplication {
     this.isInitialized = true;
     Logger.log(MESSAGES.APPLICATION_READY, "NestApplication");
     return this;
+  }
+
+  private resolveDependencies(Controller: any) {
+    const injectKey = "injectTokens";
+
+    // 获取注入的token
+    const injectTokens = Reflect.getMetadata(injectKey, Controller);
+
+    // 获取构造函数的参数
+    const constructorParams = Reflect.getMetadata("design:paramtypes", Controller);
+
+    console.log('injectTokens: ',injectTokens);
+    console.log('constructorParams: ',constructorParams);
+    return [];
   }
 
   /**

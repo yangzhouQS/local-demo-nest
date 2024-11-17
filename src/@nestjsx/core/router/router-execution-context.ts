@@ -1,5 +1,5 @@
 import { ContextUtils } from "../helpers";
-import { RouteParamMetadata } from "@nestjs/common";
+import { RouteParamMetadata } from "../../common";
 import { map } from "lodash";
 import { IRouteParamsFactory } from "./interface/route-params-factory.interface";
 

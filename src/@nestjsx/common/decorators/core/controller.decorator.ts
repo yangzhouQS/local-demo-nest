@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import type { VersionOptions,ScopeOptions } from "@nestjs/common";
+import type { VersionOptions,ScopeOptions } from "../../../common";
 import {
   CONTROLLER_WATERMARK,
   HOST_METADATA,

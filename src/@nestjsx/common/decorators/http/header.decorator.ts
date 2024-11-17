@@ -1,4 +1,4 @@
-import { HEADERS_METADATA } from "@nestjs/common/constants";
+import { HEADERS_METADATA } from "../../../common/constants";
 
 /**
  * 请求方法装饰器。用于设置响应头。

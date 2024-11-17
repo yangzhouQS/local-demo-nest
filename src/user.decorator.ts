@@ -1,4 +1,4 @@
-import { createParamMetadata } from "./@nestjs/common";
+import { createParamMetadata } from "./@nestjsx/common";
 import { get } from "lodash";
 
 

@@ -1,4 +1,4 @@
-import { NestFactory } from "./@nestjs/core";
+import { NestFactory } from "./@nestjsx/core";
 import { AppModule } from "./app.module";
 import * as session from "express-session";
 import * as bodyParser from 'body-parser';

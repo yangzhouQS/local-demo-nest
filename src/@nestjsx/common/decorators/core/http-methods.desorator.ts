@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import { METHOD_METADATA, PATH_METADATA } from "@nestjs/common/constants";
+import { METHOD_METADATA, PATH_METADATA } from "../../../common/constants";
 
 
 function createMappingDecorator(method: string) {

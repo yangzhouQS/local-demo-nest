@@ -12,9 +12,9 @@ import {
   Post,
   Res,
   Next, Redirect, Header
-} from "./@nestjs/common";
+} from "./@nestjsx/common";
 import { Request as ExpressRequest } from "express";
-import { HttpCode } from "@nestjs/common/decorators/http/http-code.decorator";
+import { HttpCode } from "./@nestjsx/common/decorators/http/http-code.decorator";
 
 @Controller("users")
 export class UserController {

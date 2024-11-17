@@ -18,7 +18,7 @@
     "noFallthroughCasesInSwitch": false,
     "baseUrl": "./",
     "paths": {
-      "@nestjs/*": ["src/@nestjs/*"]
+      "@nestjsx/*": ["src/@nestjsx/*"]
     }
   }
 }

@@ -1,8 +1,3 @@
-import { Type } from "../../interface/type.interface";
-import { RouteParamtypes } from "../../enums/route-paramtypes.enum";
-import { ROUTE_ARGS_METADATA } from "@nestjs/common/constants";
-
-
 export type ParamData = object | string | number;
 
 export interface RouteParamMetadata {
@@ -36,8 +31,7 @@ function createRouteParamDecorator(paramType: string) {
       // console.log(`paramType=${paramType}; paramsKey = ${paramsKey}; reqMethod = {${key}}`);
 
       const oldValue = Reflect.getMetadata(paramsKey, target.constructor) || [];
-      const paramsValue = { parameterIndex: index, data, paramType: paramType };
-      oldValue[index] = paramsValue;
+      oldValue[index] = { parameterIndex: index, data, paramType: paramType };
 
       Reflect.defineMetadata(paramsKey, oldValue, target.constructor);
       const oldValue2 = Reflect.getMetadata(paramsKey, target.constructor);
@@ -61,24 +55,3 @@ export const Response = createRouteParamDecorator("Response");
 export const Res = Response;
 export const Next = createRouteParamDecorator("Next");
 export const HostParam = createRouteParamDecorator("HostParam");
-
-/*export function Query(): ParameterDecorator;
-export function Query(property?: string): ParameterDecorator {
-  return createRouteParamDecorator("Query")
-}*/
-
-
-/*
-export function Get(path = ""): MethodDecorator {
-
-  /!**
-   * Get请求装饰器
-   * @param target 类的原型 xxxController.prototype
-   * @param propertyKey 被装饰的方法名称
-   * @param descriptor 方法的属性描述器
-   *!/
-  return (target: any, propertyKey: string | Symbol, descriptor: PropertyDescriptor) => {
-
-  };
-}
-*/
